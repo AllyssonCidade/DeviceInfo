@@ -13,6 +13,14 @@
     "react": "19.0.0",
     "react-native": "0.78.1"
   },
+  "codegenConfig": {
+     "name": "NativeBenchMarkSpec",
+     "type": "modules",
+     "jsSrcsDir": "specs",
+     "android": {
+       "javaPackageName": "com.nativebenchmark"
+     }
+   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
@@ -30,6 +38,7 @@
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
+    "react-native-performance": "^5.1.2",
     "react-test-renderer": "19.0.0",
     "typescript": "5.0.4"
   },
