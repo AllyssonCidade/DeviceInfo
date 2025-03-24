@@ -53,6 +53,10 @@ class NativeBenchMarkModule(reactContext: ReactApplicationContext) : NativeBench
         val wifiData: WritableMap = WritableNativeMap().apply {
             putInt("frequency", wifiInfo.frequency)
             putInt("linkSpeed", wifiInfo.linkSpeed)
+            putInt("rssi", wifiInfo.rssi)
+            putString("ssid", wifiInfo.ssid)
+            putString("bssid", wifiInfo.bssid)
+            putString("ipAddress", formatIpAddress(wifiInfo.ipAddress))
             
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 putInt("rxLinkSpeedMbps", wifiInfo.rxLinkSpeedMbps)
@@ -66,15 +70,15 @@ class NativeBenchMarkModule(reactContext: ReactApplicationContext) : NativeBench
         promise.resolve(wifiData)
     }
 
-//    private fun formatIpAddress(ipAddress: Int): String {
-//        return String.format(
-//            "%d.%d.%d.%d",
-//            ipAddress and 0xff,
-//            ipAddress shr 8 and 0xff,
-//            ipAddress shr 16 and 0xff,
-//            ipAddress shr 24 and 0xff
-//        )
-//    }
+   private fun formatIpAddress(ipAddress: Int): String {
+       return String.format(
+           "%d.%d.%d.%d",
+           ipAddress and 0xff,
+           ipAddress shr 8 and 0xff,
+           ipAddress shr 16 and 0xff,
+           ipAddress shr 24 and 0xff
+       )
+   }
 
     companion object {
         const val NAME = "NativeBenchMark"

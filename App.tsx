@@ -8,8 +8,12 @@ const {NativeBenchMark} = NativeModules;
 
 // Interface para tipar os dados do Wi-Fi
 interface WifiInfo {
+  ssid: string;
+  bssid: string;
   frequency: number;
   linkSpeed: number;
+  ipAddress: string;
+  rssi: number;
   rxLinkSpeedMbps: number;
   txLinkSpeedMbps: number;
 }
@@ -62,6 +66,11 @@ export default function App(): React.JSX.Element {
     }
   }
 
+  async function Refresh() {
+    await getBench();
+    await getWifiInfo();
+  }
+
   useEffect(() => {
     const initialize = async () => {
       const hasPermission = await requestLocationPermission();
@@ -75,17 +84,40 @@ export default function App(): React.JSX.Element {
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text style={{fontSize: 18, marginBottom: 10}}>
-        Informações do Wi-Fi:{' '}
+      <Text
+        style={{
+          fontSize: 22,
+          fontWeight: 'bold',
+          marginBottom: 10,
+        }}>
+        Wi-Fi
+      </Text>
+      <Text
+        style={{
+          fontSize: 18,
+          marginBottom: 10,
+        }}>
         {wifiInfo
-          ? `Freq: ${wifiInfo.frequency} MHz, Link: ${wifiInfo.linkSpeed} Mbps`
+          ? `
+          Freq: ${wifiInfo.frequency} MHz, 
+          Link: ${wifiInfo.linkSpeed} Mbps, 
+          RSSI: ${wifiInfo.rssi} dBm, 
+          IP: ${wifiInfo.ipAddress}, 
+          RX: ${wifiInfo.rxLinkSpeedMbps} Mbps, 
+          TX: ${wifiInfo.txLinkSpeedMbps} Mbps,
+          ssid: ${wifiInfo.ssid},
+          bssid: ${wifiInfo.bssid},
+          `
           : 'Carregando...'}
       </Text>
-      <Button title="Atualizar Informações" onPress={getWifiInfo} />
-      <Text style={{fontSize: 24, fontWeight: 'bold', color: 'blue'}}>
-        Modelo do Dispositivo: {deviceModel || 'Carregando...'}
+      <Text style={{fontSize: 22, marginBottom: 10, fontWeight: 'bold'}}>
+        Device
       </Text>
-      <Button title="Atualizar Modelo" onPress={getBench} />
+      <Text style={{fontSize: 18, marginBottom: 10, textAlign: 'left'}}>
+        {deviceModel || 'Carregando...'}
+      </Text>
+
+      <Button title="Resresh" onPress={Refresh} />
     </View>
   );
 }
