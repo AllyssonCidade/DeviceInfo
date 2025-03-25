@@ -11,9 +11,25 @@ export interface WifiInfo {
   rxLinkSpeedMbps: number;
   txLinkSpeedMbps: number;
 }
+
+export interface BuildInfo {
+  model: string;
+  manufacturer: string;
+  version: string;
+  sdk: string;
+  board: string;
+  device: string;
+  display: string;
+  odm_sku: string;
+  id: string;
+  product: string;
+  serial: string;
+  type: string;
+}
+
 export interface Spec extends TurboModule {
-  getBuild(): Promise<String>;
-  getWifiInfo(): Promise<WifiInfo>;
+  getBuild(): BuildInfo;
+  getWifiInfo(): WifiInfo;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeBenchMark');

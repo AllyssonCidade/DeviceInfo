@@ -18,6 +18,21 @@ interface WifiInfo {
   txLinkSpeedMbps: number;
 }
 
+export interface BuildInfo {
+  model: string;
+  manufacturer: string;
+  version: string;
+  sdk: string;
+  board: string;
+  device: string;
+  display: string;
+  odm_sku: string;
+  id: string;
+  product: string;
+  serial: string;
+  type: string;
+}
+
 const requestLocationPermission = async (): Promise<boolean> => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -45,7 +60,7 @@ const requestLocationPermission = async (): Promise<boolean> => {
 };
 
 export default function App(): React.JSX.Element {
-  const [deviceModel, setDeviceModel] = useState<string | null>(null);
+  const [deviceModel, setDeviceModel] = useState<BuildInfo | null>(null);
   const [wifiInfo, setWifiInfo] = useState<WifiInfo | null>(null);
 
   async function getWifiInfo() {
@@ -79,7 +94,14 @@ export default function App(): React.JSX.Element {
         await getWifiInfo();
       }
     };
+
     initialize();
+
+    const interval = setInterval(() => {
+      getWifiInfo();
+    }, 200);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -110,11 +132,27 @@ export default function App(): React.JSX.Element {
           `
           : 'Carregando...'}
       </Text>
+
       <Text style={{fontSize: 22, marginBottom: 10, fontWeight: 'bold'}}>
         Device
       </Text>
-      <Text style={{fontSize: 18, marginBottom: 10, textAlign: 'left'}}>
-        {deviceModel || 'Carregando...'}
+      <Text style={{fontSize: 18, marginBottom: 10}}>
+        {deviceModel
+          ? `
+          Model: ${deviceModel.model},
+          Manufacturer: ${deviceModel.manufacturer},
+          Version: ${deviceModel.version},
+          SDK: ${deviceModel.sdk},
+          Board: ${deviceModel.board},
+          Device: ${deviceModel.device},
+          Display: ${deviceModel.display},
+          ODM_SKU: ${deviceModel.odm_sku},
+          ID: ${deviceModel.id},
+          Product: ${deviceModel.product},
+          Serial: ${deviceModel.serial},
+          Type: ${deviceModel.type},
+          `
+          : 'Carregando...'}
       </Text>
 
       <Button title="Resresh" onPress={Refresh} />

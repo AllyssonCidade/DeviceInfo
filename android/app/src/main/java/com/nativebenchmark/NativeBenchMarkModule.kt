@@ -6,7 +6,6 @@ import com.nativebenchmark.NativeBenchMarkSpec
 import com.facebook.react.bridge.ReactApplicationContext
 
 // Import da ponte com a promise
-import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -25,29 +24,41 @@ class NativeBenchMarkModule(reactContext: ReactApplicationContext) : NativeBench
 
     override fun getName() = NAME
 
-    override fun getBuild(promise: Promise) {
-        val model = Build.DEVICE
-        promise.resolve(model)
+    override fun getBuild(): WritableMap {
+        val buildData: WritableMap = WritableNativeMap().apply {
+            putString("model", Build.MODEL)
+            putString("manufacturer", Build.MANUFACTURER)
+            putString("version", Build.VERSION.RELEASE)
+            putString("sdk", Build.VERSION.SDK_INT.toString())
+            putString("board", Build.BOARD)
+            putString("device", Build.DEVICE)
+            putString("display", Build.DISPLAY)
+            putString("odm_sku", Build.ODM_SKU)
+            putString("id", Build.ID)
+            putString("product", Build.PRODUCT)
+            putString("serial", Build.SERIAL)
+            putString("type", Build.TYPE)
+        }
+
+        return buildData
     }
   
-    override fun getWifiInfo(promise: Promise) {
+ 
+    override fun getWifiInfo(): WritableMap {
         val context = reactApplicationContext
         
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            promise.reject("PERMISSION_DENIED", "Permissão negada")
-            return
+       if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            throw SecurityException("Permissão negada")
         }
 
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isWifiEnabled) {
-            promise.reject("WIFI_DISABLED", "Wi-Fi está desativado")
-            return
+            throw IllegalStateException("Wi-Fi está desativado")
         }
 
         val wifiInfo: WifiInfo = wifiManager.connectionInfo
         if (wifiInfo == null || wifiInfo.networkId == -1) {
-            promise.reject("NOT_CONNECTED", "Não conectado ao Wi-Fi")
-            return
+            throw IllegalStateException("Não conectado ao Wi-Fi")
         }
 
         val wifiData: WritableMap = WritableNativeMap().apply {
@@ -67,8 +78,9 @@ class NativeBenchMarkModule(reactContext: ReactApplicationContext) : NativeBench
             }
         }
         
-        promise.resolve(wifiData)
+        return wifiData
     }
+
 
    private fun formatIpAddress(ipAddress: Int): String {
        return String.format(
